@@ -24,7 +24,15 @@ Baixe, extraia e use. Sem instalar nada.
 - Dados salvos localmente — sem internet, sem cadastro
 
 ---
+## 🛠️ Como compilar
 
+1. Baixe ou clone este repositório
+2. Dê dois cliques em **`build.bat`**
+3. O arquivo `saida\DicionarioApp_Portable.zip` será gerado automaticamente
+
+**Requisitos para compilar:**
+- Windows 10/11
+- .NET 8 SDK *(o build.bat instala automaticamente se não tiver)*
 ---
 
 ## 🖥️ Tecnologias
