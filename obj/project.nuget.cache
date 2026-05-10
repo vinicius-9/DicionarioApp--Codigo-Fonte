@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "6bky0FeRVjk=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\vinicius\\Downloads\\DicionarioApp\\DicionarioApp\\DicionarioApp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\vinicius\\.nuget\\packages\\microsoft.win32.systemevents\\8.0.0\\microsoft.win32.systemevents.8.0.0.nupkg.sha512",
+    "C:\\Users\\vinicius\\.nuget\\packages\\system.drawing.common\\8.0.0\\system.drawing.common.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

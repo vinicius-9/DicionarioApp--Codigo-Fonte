@@ -1,0 +1,550 @@
+<Window x:Class="DicionarioApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DicionarioApp"
+        Title="Dicionário App"
+        Height="660" Width="1060"
+        MinHeight="560" MinWidth="820"
+        Background="#0b1120"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+
+        <!-- ── ListBoxItem: sem highlight, sem borda ── -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Padding"                   Value="0"/>
+            <Setter Property="Margin"                    Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background"                Value="Transparent"/>
+            <Setter Property="BorderThickness"           Value="0"/>
+            <Setter Property="Focusable"                 Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Botão verde (Adicionar / Salvar) ── -->
+        <Style x:Key="BtnVerde" TargetType="Button">
+            <Setter Property="Background"    Value="#10b981"/>
+            <Setter Property="Foreground"    Value="White"/>
+            <Setter Property="BorderBrush"   Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height"        Value="44"/>
+            <Setter Property="FontWeight"    Value="Bold"/>
+            <Setter Property="FontSize"      Value="14"/>
+            <Setter Property="Cursor"        Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                CornerRadius="14" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#059669"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#047857"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Botão cinza (Limpar) ── -->
+        <Style x:Key="BtnCinza" TargetType="Button" BasedOn="{StaticResource BtnVerde}">
+            <Setter Property="Background" Value="#334155"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                CornerRadius="14" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#475569"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1e293b"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Botão vermelho (Remover no detalhe) ── -->
+        <Style x:Key="BtnVermelho" TargetType="Button" BasedOn="{StaticResource BtnVerde}">
+            <Setter Property="Background" Value="#7f1d1d"/>
+            <Setter Property="Foreground"  Value="#fca5a5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                CornerRadius="14" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#991b1b"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Botão de ícone (editar/remover na lista) ── -->
+        <Style x:Key="BtnIcone" TargetType="Button">
+            <Setter Property="Background"      Value="#1f2937"/>
+            <Setter Property="BorderBrush"     Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width"           Value="36"/>
+            <Setter Property="Height"          Value="36"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#374151"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Botão Voltar (link-style) ── -->
+        <Style x:Key="BtnVoltar" TargetType="Button">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="Foreground"      Value="#94a3b8"/>
+            <Setter Property="BorderBrush"     Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize"        Value="14"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="Padding"         Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock x:Name="tb" Text="{TemplateBinding Content}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   FontSize="{TemplateBinding FontSize}"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="tb" Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ── Papel / Página (ícone dos cards de palavra) ── -->
+        <DrawingImage x:Key="IconePagina">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <!-- corpo do papel -->
+                    <GeometryDrawing Brush="#e2e8f0"
+                                     Geometry="M 4,1 L 16,1 L 20,5 L 20,23 L 4,23 Z"/>
+                    <!-- sombra leve da dobra -->
+                    <GeometryDrawing Brush="#94a3b8"
+                                     Geometry="M 16,1 L 16,5 L 20,5 Z"/>
+                    <!-- linha divisória da dobra -->
+                    <GeometryDrawing>
+                        <GeometryDrawing.Pen><Pen Brush="#64748b" Thickness="0.6"/></GeometryDrawing.Pen>
+                        <GeometryDrawing.Geometry>
+                            <PathGeometry>
+                                <PathFigure StartPoint="16,1">
+                                    <LineSegment Point="16,5"/>
+                                    <LineSegment Point="20,5"/>
+                                </PathFigure>
+                            </PathGeometry>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                    <!-- linhas de texto -->
+                    <GeometryDrawing>
+                        <GeometryDrawing.Pen>
+                            <Pen Brush="#64748b" Thickness="1.4" StartLineCap="Round" EndLineCap="Round"/>
+                        </GeometryDrawing.Pen>
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <LineGeometry StartPoint="7,9"  EndPoint="17,9"/>
+                                <LineGeometry StartPoint="7,12" EndPoint="17,12"/>
+                                <LineGeometry StartPoint="7,15" EndPoint="13,15"/>
+                                <LineGeometry StartPoint="7,18" EndPoint="15,18"/>
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+
+    </Window.Resources>
+
+    <!-- LAYOUT PRINCIPAL-->
+    <Grid Margin="20">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- PAINEL ESQUERDO — Formulário -->
+        <Border Grid.Column="0"
+                Background="#111827" CornerRadius="28" Padding="28"
+                Margin="0,0,16,0" SnapsToDevicePixels="True">
+            <DockPanel>
+
+                <!-- Logo + Título -->
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,24">
+                    <!--
+                        LOGO PERSONALIZADA — livro aberto estilizado em forma de "D"
+                        Fundo: violeta #7c3aed (diferente do azul original)
+                        Forma: dois triângulos que imitam páginas abertas
+                              + lombada central + linhas de texto + estrela
+                    -->
+                    <Border Width="52" Height="52" Background="#7c3aed" CornerRadius="16">
+                        <Viewbox Width="30" Height="30">
+                            <Canvas Width="24" Height="24">
+                                <!-- Página esquerda -->
+                                <Path Fill="White" Opacity="0.90"
+                                      Data="M 3,5.5 C 5,5 8.5,4.8 11.2,5.5
+                                            L 11.2,19.5
+                                            C 8.5,18.8 5,18.6 3,18.5 Z"/>
+                                <!-- Página direita -->
+                                <Path Fill="White" Opacity="0.60"
+                                      Data="M 12.8,5.5 C 15.5,4.8 19,5 21,5.5
+                                            L 21,18.5
+                                            C 19,18.6 15.5,18.8 12.8,19.5 Z"/>
+                                <!-- Lombada -->
+                                <Rectangle Canvas.Left="11.2" Canvas.Top="5"
+                                           Width="1.6" Height="14.5"
+                                           Fill="#e9d5ff" Opacity="0.7"/>
+                                <!-- Linhas na página esquerda -->
+                                <Line X1="5"  Y1="9"  X2="10" Y2="9"  Stroke="White" StrokeThickness="0.8" Opacity="0.45"/>
+                                <Line X1="5"  Y1="12" X2="10" Y2="12" Stroke="White" StrokeThickness="0.8" Opacity="0.45"/>
+                                <Line X1="5"  Y1="15" X2="9"  Y2="15" Stroke="White" StrokeThickness="0.8" Opacity="0.45"/>
+                                <!-- Linhas na página direita -->
+                                <Line X1="14" Y1="9"  X2="19" Y2="9"  Stroke="White" StrokeThickness="0.8" Opacity="0.30"/>
+                                <Line X1="14" Y1="12" X2="19" Y2="12" Stroke="White" StrokeThickness="0.8" Opacity="0.30"/>
+                                <Line X1="14" Y1="15" X2="18" Y2="15" Stroke="White" StrokeThickness="0.8" Opacity="0.30"/>
+                                <!-- Estrela decorativa acima -->
+                                <Ellipse Canvas.Left="10.8" Canvas.Top="1.2"
+                                         Width="2.4" Height="2.4" Fill="#e9d5ff"/>
+                                <Line X1="12" Y1="0"   X2="12" Y2="1.1"
+                                      Stroke="#e9d5ff" StrokeThickness="1.2"/>
+                                <Line X1="12" Y1="3.7" X2="12" Y2="4.8"
+                                      Stroke="#e9d5ff" StrokeThickness="1.2"/>
+                                <Line X1="10" Y1="2.4" X2="11" Y2="2.4"
+                                      Stroke="#e9d5ff" StrokeThickness="1.2"/>
+                                <Line X1="13" Y1="2.4" X2="14" Y2="2.4"
+                                      Stroke="#e9d5ff" StrokeThickness="1.2"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+                    <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Dicionário"
+                                   FontSize="25" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Inglês · Português"
+                                   FontSize="11" Foreground="#7c3aed" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Campos -->
+                <StackPanel DockPanel.Dock="Top">
+
+                    <!-- Palavra -->
+                    <TextBlock Text="Palavra" Foreground="#cbd5e1" FontSize="12" Margin="0,0,0,6"/>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="#1f2937" CornerRadius="12" Grid.Column="0">
+                            <TextBlock Text="&#xE8AC;" FontFamily="Segoe MDL2 Assets"
+                                       Foreground="#22d3ee" FontSize="16"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBox x:Name="txtPalavra" Grid.Column="1"
+                                 Background="#0f172a" Foreground="White" CaretBrush="White"
+                                 BorderBrush="#334155" BorderThickness="1"
+                                 Padding="10" Height="40" Margin="10,0,0,0" FontSize="14"/>
+                    </Grid>
+
+                    <!-- Significado -->
+                    <TextBlock Text="Significado" Foreground="#cbd5e1" FontSize="12" Margin="0,0,0,6"/>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="#1f2937" CornerRadius="12" Grid.Column="0">
+                            <TextBlock Text="&#xE82D;" FontFamily="Segoe MDL2 Assets"
+                                       Foreground="#60a5fa" FontSize="16"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBox x:Name="txtSignificado" Grid.Column="1"
+                                 Background="#0f172a" Foreground="White" CaretBrush="White"
+                                 BorderBrush="#334155" BorderThickness="1"
+                                 Padding="10" Height="40" Margin="10,0,0,0" FontSize="14"/>
+                    </Grid>
+
+                    <!-- Exemplo -->
+                    <TextBlock Text="Exemplo (opcional)" Foreground="#cbd5e1" FontSize="12" Margin="0,0,0,6"/>
+                    <Grid Margin="0,0,0,24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="#1f2937" CornerRadius="12" Grid.Column="0">
+                            <TextBlock Text="&#xE7BC;" FontFamily="Segoe MDL2 Assets"
+                                       Foreground="#fca5a5" FontSize="16"
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBox x:Name="txtExemplo" Grid.Column="1"
+                                 Background="#0f172a" Foreground="White" CaretBrush="White"
+                                 BorderBrush="#334155" BorderThickness="1"
+                                 Padding="10" Height="40" Margin="10,0,0,0" FontSize="14"/>
+                    </Grid>
+
+                    <!-- Buscar -->
+                    <TextBlock Text="Buscar" Foreground="#cbd5e1" FontSize="12" Margin="0,0,0,6"/>
+                    <TextBox x:Name="txtBusca"
+                             Background="#0f172a" Foreground="White" CaretBrush="White"
+                             BorderBrush="#334155" BorderThickness="1"
+                             Padding="10" Height="40" FontSize="14"
+                             TextChanged="Buscar_TextChanged"
+                             Margin="0,0,0,24"/>
+
+                    <!--
+                        BOTÕES — Grid garante que Adicionar e Limpar
+                        apareçam inteiros, cada um ocupando metade da largura
+                    -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="btnAdicionar" Grid.Column="0"
+                                Content="Adicionar"
+                                Click="Adicionar_Click"
+                                Style="{StaticResource BtnVerde}"/>
+                        <Button Grid.Column="2"
+                                Content="Limpar"
+                                Click="Limpar_Click"
+                                Style="{StaticResource BtnCinza}"/>
+                    </Grid>
+
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!--  PAINEL DIREITO — Lista / Detalhe  -->
+        <Border Grid.Column="1"
+                Background="#111827" CornerRadius="28" Padding="24"
+                SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Cabeçalho -->
+                <Grid Grid.Row="0" Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock x:Name="lblTitulo"
+                                   Text="Palavras cadastradas"
+                                   FontSize="22" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock x:Name="lblSub"
+                                   Text="Clique em uma palavra para ver os detalhes"
+                                   Foreground="#94a3b8" FontSize="13" Margin="0,4,0,0"/>
+                    </StackPanel>
+                    <Border Grid.Column="1" Background="#1f2937" CornerRadius="999"
+                            Padding="14,7" VerticalAlignment="Center">
+                        <TextBlock x:Name="lblTotal" Foreground="White" FontWeight="SemiBold"/>
+                    </Border>
+                </Grid>
+
+                <!-- ─── VISÃO LISTA ─── -->
+                <!--
+                    ScrollViewer externo com ambas as barras.
+                    ListBox com seus scrollers desabilitados para
+                    que o ScrollViewer externo assuma o controle total.
+                -->
+                <ScrollViewer x:Name="scrollLista"
+                              Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Auto"
+                              CanContentScroll="False">
+                    <ListBox x:Name="listaPalavras"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             SelectionMode="Single"
+                             ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             PreviewMouseWheel="ListaPalavras_PreviewMouseWheel">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:Palavra}">
+                                <!--
+                                    Card da palavra.
+                                    MouseLeftButtonUp abre o detalhe (só se não clicou num botão).
+                                -->
+                                <Border Background="#0f172a" CornerRadius="18"
+                                        Padding="18" Margin="0,0,0,12"
+                                        Cursor="Hand" MinWidth="420"
+                                        MouseLeftButtonUp="ItemCard_MouseLeftButtonUp">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Ícone papel/página -->
+                                        <Border Width="46" Height="46" CornerRadius="14"
+                                                Background="#1e3a8a" VerticalAlignment="Top">
+                                            <Image Source="{StaticResource IconePagina}"
+                                                   Width="26" Height="26"
+                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        </Border>
+
+                                        <!-- Textos -->
+                                        <StackPanel Grid.Column="1" Margin="14,0,12,0">
+                                            <TextBlock Text="{Binding PalavraTexto}"
+                                                       Foreground="White" FontSize="17"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Significado}"
+                                                       Foreground="#cbd5e1" FontSize="13"
+                                                       TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                            <TextBlock Text="{Binding Exemplo}"
+                                                       Foreground="#94a3b8" FontSize="12"
+                                                       TextWrapping="Wrap" Margin="0,4,0,0"/>
+                                        </StackPanel>
+
+                                        <!-- Botões editar / remover -->
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                    VerticalAlignment="Top" Margin="0,2,0,0">
+                                            <Button Content="&#xE70F;"
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    Foreground="#93c5fd"
+                                                    ToolTip="Editar"
+                                                    Style="{StaticResource BtnIcone}"
+                                                    Click="EditarItem_Click"
+                                                    CommandParameter="{Binding}"/>
+                                            <Button Content="&#xE74D;"
+                                                    FontFamily="Segoe MDL2 Assets"
+                                                    Foreground="#f87171"
+                                                    ToolTip="Remover"
+                                                    Style="{StaticResource BtnIcone}"
+                                                    Margin="8,0,0,0"
+                                                    Click="RemoverItem_Click"
+                                                    CommandParameter="{Binding}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+
+                <!-- ─── VISÃO DETALHE (oculta por padrão) ─── -->
+                <ScrollViewer x:Name="scrollDetalhe"
+                              Grid.Row="1"
+                              Visibility="Collapsed"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <Border x:Name="painelDetalhe"
+                            Background="#0f172a" CornerRadius="20" Padding="28">
+                        <StackPanel>
+
+                            <!-- Botão voltar -->
+                            <Button Content="← Voltar para a lista"
+                                    Style="{StaticResource BtnVoltar}"
+                                    Click="Voltar_Click"
+                                    HorizontalAlignment="Left"
+                                    Margin="0,0,0,24"/>
+
+                            <!-- Ícone papel grande -->
+                            <Border Width="72" Height="72" CornerRadius="20"
+                                    Background="#1e3a8a" HorizontalAlignment="Left"
+                                    Margin="0,0,0,20">
+                                <Image Source="{StaticResource IconePagina}"
+                                       Width="42" Height="42"
+                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                            </Border>
+
+                            <!-- Nome da palavra -->
+                            <TextBlock x:Name="lblDetalhePalavra"
+                                       Foreground="White" FontSize="34"
+                                       FontWeight="Bold" TextWrapping="Wrap"
+                                       Margin="0,0,0,20"/>
+
+                            <!-- Significado -->
+                            <Border Background="#111827" CornerRadius="14"
+                                    Padding="18" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <TextBlock Text="SIGNIFICADO"
+                                               Foreground="#10b981" FontSize="10"
+                                               FontWeight="Bold" Margin="0,0,0,8"/>
+                                    <TextBlock x:Name="lblDetalheSignificado"
+                                               Foreground="#e2e8f0" FontSize="16"
+                                               TextWrapping="Wrap" LineHeight="24"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Exemplo (oculto se vazio) -->
+                            <Border x:Name="boxExemplo"
+                                    Background="#111827" CornerRadius="14"
+                                    Padding="18" Margin="0,0,0,28"
+                                    Visibility="Collapsed">
+                                <StackPanel>
+                                    <TextBlock Text="EXEMPLO"
+                                               Foreground="#7c3aed" FontSize="10"
+                                               FontWeight="Bold" Margin="0,0,0,8"/>
+                                    <TextBlock x:Name="lblDetalheExemplo"
+                                               Foreground="#94a3b8" FontSize="15"
+                                               TextWrapping="Wrap" FontStyle="Italic"
+                                               LineHeight="22"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Botões de ação no detalhe -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0"
+                                        Content="✏  Editar"
+                                        Style="{StaticResource BtnVerde}"
+                                        Click="EditarDetalhe_Click"/>
+                                <Button Grid.Column="2"
+                                        Content="🗑  Remover"
+                                        Style="{StaticResource BtnVermelho}"
+                                        Click="RemoverDetalhe_Click"/>
+                            </Grid>
+
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
