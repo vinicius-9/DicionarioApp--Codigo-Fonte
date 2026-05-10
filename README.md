@@ -1,4 +1,5 @@
-# 📖 DicionarioApp — Código-Fonte
+# 📖 DicionarioApp--Codigo-Fonte
+
 
 > Repositório com o código-fonte completo do DicionarioApp.
 
